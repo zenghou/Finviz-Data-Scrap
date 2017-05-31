@@ -21,7 +21,7 @@ Feel free to modify the filters on the website accordingly and you can simply co
 2. With a url input 
 e.g. 'scrap_finviz('http://finviz.com/screener.ashx') 
 
-# Credits and Acknoledgement 
+# Credits and Acknowledgement 
 All the data is retrieved from http://finviz.com/screener.ashx 
 
 
