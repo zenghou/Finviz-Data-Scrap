@@ -1,13 +1,19 @@
-#Project Title 
+# Project Title 
+
 Finviz Data Scrap for Python 3.6. This is my first non-academic related program that I have written to allow users to specifically draw data from Finviz's top gainers page, and export the data into a csv file. Do note that this API only works for scraping data on one page of Finviz's website.'Hope this is of use to some people out there. 
 
-#Prerequisites 
+# Prerequisites 
 
 You'll need the following dependencies: 
 1. BeautifulSoup4 
 2. Pandas 
 3. Urllib 
 4. Datetime 
+
+# What does it do? 
+
+This API essentially allows you to get the stock data from finviz into a dataframe, and exports it to a csv file. 
+
 
 # Example usage 
 This API can be called in two different ways. 
@@ -22,6 +28,7 @@ Feel free to modify the filters on the website accordingly and you can simply co
 e.g. 'scrap_finviz('http://finviz.com/screener.ashx') 
 
 # Credits and Acknowledgement 
+
 All the data is retrieved from http://finviz.com/screener.ashx 
 
 
