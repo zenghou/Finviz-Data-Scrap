@@ -1,4 +1,4 @@
-def scrap_finviz(*url):
+def scrap_finviz(strategyNum, *url):
     from urllib.request import urlopen
     from bs4 import BeautifulSoup
     import pandas as pd
@@ -16,18 +16,42 @@ def scrap_finviz(*url):
         finviz_url = "http://finviz.com/screener.ashx?v=111&s=ta_topgainers&f=sh_curvol_o500,sh_price_1to20"
         page = urlopen(finviz_url)
 
-    soup = BeautifulSoup(page, "html.parser")
-
-    # search all html lines containing table data about stock 
-    html_data = soup.find_all('td', class_="screener-body-table-nw")
-
-    # collect all the text data in a list 
+    hasNextPage = True
+    firstPage = True
+    # from page 2 onwards 
+    currentPageIndex = 0
+    # collect all the text data in a list
     text_data = []
 
-    for row in html_data:
-        text_data.append(row.get_text())
+    while hasNextPage: 
+        if not firstPage:
+            finviz_url += "&r=" + str(currentPageIndex)
+            page = urlopen(finviz_url)
+        soup = BeautifulSoup(page, "html.parser")
 
-    # takes as input text_data 
+        # search all html lines containing table data about stock 
+        html_data = soup.find_all('td', class_="screener-body-table-nw")
+        counter = 0 
+        for row in html_data:
+            counter+= 1
+            text_data.append(row.get_text())
+        print("final count: " + str(counter))
+
+        # toggle flag such that firstPage will be false after first run 
+        firstPage = False
+
+        # advance to next page url
+        if currentPageIndex == 0:
+            currentPageIndex += 21
+        else:
+            currentPageIndex += 20 
+        # 220 is derrived from 20 stocks in a single page * 11 columns
+        # anything lesser than 220 implies that page is not full (i.e. no next page)
+        if counter < 220:
+            hasNextPage = False       
+
+    # takes as input text_data array and outputs list of lists
+    # each list contains information about one stock
     def helper(data):
         counter = 0 
         list_of_lists = []
@@ -41,19 +65,23 @@ def scrap_finviz(*url):
                 temp_list = []
             temp_list.append(elem)
             counter += 1
+        list_of_lists.append(temp_list)
         return list_of_lists
+    
     stock_data = helper(text_data)
+    
     # remove the numerical index from each list
     for each_stock in stock_data:
-        del each_stock[0] 
+        del each_stock[0]
+        
     labels = ['Ticker', 'Company', 'Sector', 'Industry', 'Country', 'Market Cap', 'P/E', 'Price', 'Change', 'Volume']
     df = pd.DataFrame.from_records(stock_data, columns=labels)
     # date of retrieval
-    print(str(datetime.now()))
+    print(str(datetime.now())) 
     # time taken to retrieve data
     print('Time taken to draw data: ' + str(round(time.time() - start_time, 2)) + ' seconds')
     # save as csv file
-    df.to_csv('/Users/ZengHou/Desktop/finviz_data.csv', index=False)
+    df.to_csv('/Users/ZengHou/Desktop/Stock Strategies/finviz_data_strategy' + str(strategyNum) + '.csv', index=False)
     return df
 
 
