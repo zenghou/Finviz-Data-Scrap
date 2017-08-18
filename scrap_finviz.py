@@ -9,7 +9,8 @@ def scrap_finviz(strategyNum, *url):
 
     # if tuple is not empty 
     if url:
-        page = urlopen(url[0])
+        finviz_url = url[0]
+        page = urlopen(finviz_url)
     # else use default url
     else:
         # input hard coded url here
@@ -35,7 +36,6 @@ def scrap_finviz(strategyNum, *url):
         for row in html_data:
             counter+= 1
             text_data.append(row.get_text())
-        print("final count: " + str(counter))
 
         # toggle flag such that firstPage will be false after first run 
         firstPage = False
@@ -57,12 +57,16 @@ def scrap_finviz(strategyNum, *url):
         list_of_lists = []
         temp_list = []
         for elem in data:
+            # end of each stock
             if counter % 11 == 0:
                 # add currently filled temp_list to list_of_lists if not empty
                 if temp_list: 
                     list_of_lists.append(temp_list)
                 # reset to empty list
                 temp_list = []
+            # change from string to int for % change
+            if elem[-1] == '%':
+                elem = float(elem[:-1])
             temp_list.append(elem)
             counter += 1
         list_of_lists.append(temp_list)
@@ -74,7 +78,7 @@ def scrap_finviz(strategyNum, *url):
     for each_stock in stock_data:
         del each_stock[0]
         
-    labels = ['Ticker', 'Company', 'Sector', 'Industry', 'Country', 'Market Cap', 'P/E', 'Price', 'Change', 'Volume']
+    labels = ['Ticker', 'Company', 'Sector', 'Industry', 'Country', 'Market Cap', 'P/E', 'Price', '% Change', 'Volume']
     df = pd.DataFrame.from_records(stock_data, columns=labels)
     # date of retrieval
     print(str(datetime.now())) 
